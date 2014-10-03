@@ -49,8 +49,11 @@ h4 {
 
 /* Main marketing message and sign up button */
 .jumbotron {
-  /*text-align: center; */
   border-bottom: 1px solid #e5e5e5;
+  background:rgba(223, 239, 255, 1);
+}
+.jumbotron p {
+  font-size: 14px;
 }
 
 /* Supporting marketing content */

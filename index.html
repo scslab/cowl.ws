@@ -39,16 +39,31 @@
         <div class="row marketing">
 
           <div class="jumbotron">
+            <h3>About</h3>
             <p>
-              The system <em> Confinement with Origin Web Labels</em>, or
-              simply <b>COWL</b>, protects Internet users’ <em>privacy</em>,
-              while flexibly allowing web applications to combine content from
-              different sources. COWL provides a property known as
-              <em>confinement</em>, which has been known since the 1970s, but
-              proven difficult to achieve in widely deployed systems like web
-              browsers. What makes COWL unique is its minimalist design and its
-              low run-time overhead.
+            Modern web applications are conglomerations of JavaScript written by multiple
+            authors: application developers routinely incorporate code from third-party
+            libraries, and <i>mashup</i> applications synthesize data and code hosted at different
+            sites. In current browsers, a web application's developer and user must trust
+            third-party code in libraries not to leak the user's sensitive information from
+            within applications. Even worse, in the status quo, the only way to implement
+            some mashups is for the user to give her login credentials for one site to the
+            operator of another site.  Fundamentally, today's browser security model trades
+            privacy for flexibility because it lacks a sufficient mechanism for <i>confining
+            untrusted code</i> once it reads sensitive data.
+            </p>
 
+            <p>
+            COWL is a robust JavaScript confinement system for modern web
+            browsers.  COWL introduces label-based <a
+            href="https://en.wikipedia.org/wiki/Mandatory_access_control">mandatory access
+            control</a> to browsing contexts (pages, iframes, etc.) in a way that is fully
+            backward-compatible with legacy web content. With COWL, developers can not only
+            restrict with whom they share data, but additionally impose restrictions on how
+            their data is disseminated once it is shared.  COWL eliminates the
+            flexibility-privacy divide by allowing code to (flexibly) fetch and shared data
+            as necessary; to ensure user privacy COWL only confines the code, by revoking
+            these rights, once the code has read read sensitive data.
             </p>
           </div>
           <div class="col-lg-12">
@@ -67,6 +82,10 @@
             In turn, COWL uses these labels to restrict how the code within the
             context communicates, i.e., it confines the code to disallow
             any communication that would result in leaking an origin's sensitive data.
+            Since COWL is backwards-compatible, these restrictions are imposed atop 
+            existing discretionary policies, such as the 
+            <a href="https://en.wikipedia.org/wiki/Same-origin_policy">same-origin policy</a> and 
+            <a href="https://en.wikipedia.org/wiki/Content_Security_Policy">CSP</a>.
             </p>
           </div>
 
@@ -74,11 +93,12 @@
             <h4>Labeled communication</h4>
             <p>
             To impose restrictions on how third-party code can use sensitive data,
-            developers can label data before handing it off to the third-party context.
+            developers can label data before handing it off to the third-party context (e.g., using <var>postMessage</var>).
             In turn, when the third-party code decides to use the data, COWL "taints" its
             context label to confine the executing code.
             This is different from today's model which effectively forces the developer
             to chose between using the third-party code or risk leaking the shared data.
+            With COWL, the developer can use the library but ensure its confined once granted access to sensitive information.
             </p>
           </div>
           <div class="col-lg-12">
@@ -88,13 +108,25 @@
     any script within the context for the page is trusted not to violate the
     security concerns of https://example.com.  This is natural: https://example.com
     should be allowed to dictate how its data is disseminated! In COWL, this notion
-    of <i>trust</i> is made explicit with <i>privileges</i>. Specifically,
-    privileges enable code to act on behalf of the page's origin and thus avoid
+    of <i>trust</i> is made explicit with <i>privileges</i>. 
+    Privileges enable code to act on behalf of the page's origin and thus avoid
     getting confined when reading data sensitive to its origin. Equally important,
     however, COWL allows code to "drop" its privileges or delegate them to other
     trustworthy code. Developers can use this to build <a
     href="https://en.wikipedia.org/wiki/Principle_of_least_privilege">least-privileged</a>
     applications.
+            </p>
+          </div>
+          <div class="col-lg-12">
+            <p>
+This simple design is amendable to a fast browser layout engine-level
+implementation, with no modifications to the underlying JavaScript engines.
+Moreover, it allows us to simply extend already-familiar concepts (e.g.,
+concepts, postMessaging, and XMLHttpRequest), as a way of giving developers
+additional control over the privacy of the data they curate.
+Our example (see link above) illustrates how the COWL API can be used to
+confine a third-party password-strength checker library; our paper details
+sever other common application patterns.
             </p>
           </div>
 
@@ -187,7 +219,7 @@
 
             An <var>LWorker</var> is a light-weight labeled worker, COWL's
             approach to creating cheap labeled contexts. (They are similar to
-            <a href="http://www.w3.org/TR/workers/">Web Workers</a>,
+            <a href="https://en.wikipedia.org/wiki/Web_worker">Web Workers</a>,
             but labeled and run in the same thread as the parent.)
             This code is simply creates a new context and starts running the untrusted
             checker code in this context.
