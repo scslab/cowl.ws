@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  
+  <title> COWL: A confinement system for the Web </title>
+
+  <!-- Bootstrap core CSS -->
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700,300italic' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/jumbotron-narrow.css" rel="stylesheet">
+
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+  </head>
+
+  <body onload="prettyPrint()">
+
+  <div class="container">
+    <div class="header">
+      <ul class="nav nav-pills pull-right">
+        <li><a href="#paper">Paper</a></li>
+        <li><a href="#example">Example</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+      <h3 class="text-muted">COWL: A confinement system for the Web</h3>
+    </div>
+
+    <div class="jumbotron">
+      <p>
+        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus,
+        tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
+        justo sit amet risus.
+      </p>
+    </div>
+
+    <div class="row marketing">
+      <div class="col-lg-12">
+        <h3>Design</h3>
+        The COWL design naturally extends the existing web security model with three
+        core concepts on top of which developers can build privacy preserving
+        web-services. These concepts are:
+      </div>
+      <div class="col-lg-12">
+        <h4>Labeled contexts</h4>
+        <p>
+        Today, <i>contexts</i> -- in the form of tabs, pages, or iframes -- are
+        used to isolate content from different origins (web sites).
+        COWL extends these context with <i>labels</i>, which encode the origins
+        from where the context has read information. 
+        In turn, COWL uses these labels to restrict how the code within the
+        context communicates, i.e., it confines the code to disallow
+        any communication that would result in leaking an origin's sensitive data.
+        </p>
+      </div>
+
+      <div class="col-lg-12">
+        <h4>Labeled communication</h4>
+        <p>
+        To impose restrictions on how third-party code can use sensitive data,
+        developers can label data before handing it off to the third-party context.
+        In turn, when the third-party code decides to use the data, COWL "taints" its
+        context label to confine the executing code.
+        This is different from today's model which effectively forces the developer
+        to chose between using the third-party code or risk leaking the shared data.
+        </p>
+      </div>
+      <div class="col-lg-12">
+        <h4>Privileges</h4>
+        <p>
+In today's model, when the browser retrieves a page from https://example.com,
+any script within the context for the page is trusted not to violate the
+security concerns of https://example.com.  This is natural: https://example.com
+should be allowed to dictate how its data is disseminated! In COWL, this notion
+of <i>trust</i> is made explicit with <i>privileges</i>. Specifically,
+privileges enable code to act on behalf of the page's origin and thus avoid
+getting confined when reading data sensitive to its origin. Equally important,
+however, COWL allows code to "drop" its privileges or delegate them to other
+trustworthy code. Developers can use this to build <a
+href="https://en.wikipedia.org/wiki/Principle_of_least_privilege">least-privileged</a>
+applications.
+        </p>
+      </div>
+
+      <div class="col-lg-12">
+      <a name="paper"></a>
+        <h3>Learn more</a></h3>
+        <p>
+        <a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.pdf">
+          <img src="images/pdf.png"/>
+          <strong>Protecting Users by Confining JavaScript with COWL.</strong>
+        </a>
+        Stefan, D., Yang, E., Marchenko, P., Russo, A., Herman, D., Karp, B., and Mazières, D
+        In the Proceedings of the
+        <a href="https://www.usenix.org/conference/osdi14">
+          11th USENIX Symposium on Operating Systems Design and Implementation (OSDI 2014) </a>,
+        Broomfield, CO, October, 2014.
+        [<a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.bib">bibTex</a>]
+        </p>
+
+        <p>
+        <a href="http://www.scs.stanford.edu/~deian/pubs/yang:2013:towards.pdf">
+          <img src="images/pdf.png"/>
+          <strong>Toward Principled Browser Security</strong>
+        </a>
+        Yang, E., Stefan, D., Mitchell, J., Mazières, D., Marchenko, P., and Karp, B.
+        In the Proceedings of the
+        <a href="https://www.usenix.org/conference/hotos13">
+          14th USENIX Workshop on Hot Topics in Operating Systems (HotOS XIV)</a>,
+        Santa Ana, NM, May, 2013.
+        [<a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.bib">bibTex</a>]
+        </p>
+      </div>
+
+      <div class="col-lg-12">
+        <a name="example"></a>
+        <h3>Example: Confining  a password strength checker with COWL</a></h3>
+        <p>
+        COWL can be used to build several common types of applications, securely.
+        Our <a href="#paper">paper</a> describes several examples, including an
+        encrypted document-editor, a banking app that relies on jQuery, a third-party
+        mashup, and a password strength checker. We will release the code for all of these soon,
+        but for now let's see how we can confine a third-party library such as
+        a password-strength checker.
+        </p>
+        <p>
+        As a page developer of https://example.com I want to use the password strength
+        checker from http://sketchy.ru/checker.js. Maybe the developers at sketchy.ru are not
+        malicious, but I don't trust them to write bug-free code.
+        In particular, the checker may need to communicate with sketchy.ru to fetch data
+        that it needs to do its job.
+        (For a more realistic library, e.g., the syntax highlighter running in this page, this is desirable functionality.)
+        How do I use COWL to ensure that the checker won't leak my password to sketchy.ru or any
+        other site?
+        </p>
+
+        <div>
+        <h4> Step 1: load the checker in a new labeled context </h4>
+
+<pre class="prettyprint lang-js">
+   // In example.com page, create new context:
+   var checker = new LWorker("http://sketchy.ru/checker.js");
+</pre>
+
+        An <code>LWorker</code> is a light-weight labeled worker, COWL's
+        approach to creating cheap labeled contexts. (They are similar to
+        <a href="http://www.w3.org/TR/workers/">Web Workers</a>, 
+        but labeled and run in the same thread as the parent.)
+        This code is simply creates a new context and starts running the untrusted
+        checker code in this context.
+        </div>
+
+        <div>
+        <h4> Step 2: register handler to get result</h4>
+
+<pre class="prettyprint lang-js">
+   // In example.com page, register message handler waiting for result
+   checker.onmessage = function(result) {
+     console.log('Password is: ' + result.toString());
+   }; 
+</pre>
+        Since all communication between labeled contexts is done by
+        message-passing, we registers a handler which is invoked once the
+        checker send us the result.
+        </div>
+
+        <div>
+        <h4> Step 3: send password</h4>
+
+<pre class="prettyprint lang-js">
+   // Is the password sensitive? Yes, label it with example.com!
+   var labeledPassword = new LabeledBlob(password, "http://example.com");
+   // Send the checker the labeled password:
+   checker.postMessage(labeledPassword);
+</pre>
+
+        Finally, let's send the checker the password so it can do its job.
+        Since the password is senstive, though, we label it with the 
+        origin it's sensitive to: example.com. Now when when the checker
+        reads the password, it will be confined!
+        </div>
+
+        <div>
+        <h4> The checker code</h4>
+        <p>
+        Our code expects the checker to use message passing, what might
+        the this code look like? Here is one e.g.:
+        </p>
+
+<pre class="prettyprint lang-js">
+  // In checker.js, register handler waiting for request from parent:
+  onmessage = function(labeledPass) {
+    if (doneLoading) {
+      var password = labeledPass.blob; // Extract password => taints context!
+      // Cannot communicate with sketchy.ru anymore, but can reply to parent:
+      postMessage(checkStrength(password));
+    }
+  };
+  // .. use XHLHttpRequest to communicate with arbitrary sites
+</pre>
+
+        This checker code starts out unconstrained: it can communicate with arbitrary
+        web sites to fetch any data it needs.
+        However, once it finished doing so (indicated by <code>doneLoading</code>)
+        and the parent supplied it the labeled password, it can proceed to check
+        the strength of the password. Specifically, in the <code>onmessage</code> handler,
+        the code extracts the password from the labeled blob -- at which point COWL
+        taints the context -- and computes the strength with the
+        <code>checkStrength</code> function.
+        Once the code inspected the password COWL confined it, preventing it from 
+        communicating arbitrarily.
+        The code can, of course, send the containing example.com page the
+        strength of the password.
+        </div>
+        <div>
+        <h4> Take-away: privacy AND functionality</h4>
+        Though a simple example, this illustrates an important feature not achievable today:
+        the password strength checker has the <i>flexibility</i> to communicate as necessary, 
+        only once it actually inspects the password should it be confined from communicating 
+        arbitrarily as to ensure <i>privacy</i>. Today we either get functionality by allowing
+        the checker to communicate arbitrarily, even after reading sensitive data, or privacy by 
+        disallowing it from communicating at all (or not using the library in the first place).
+        </div>
+
+      </div>
+
+      <div class="col-lg-12">
+        <a name="software"></a>
+        <h3>Software</a></h3>
+        COWL was implemented for Firefox and Chromium. An initial software
+        release (both code and binaries) will be available soon!
+      </div>
+
+      <div class="col-lg-12">
+        <a name="about"></a>
+        <h3>About us</a></h3>
+        <p>COWL is a research project with peers from different organizations. We are: </p>
+        <ul>
+          <li><a href="http://www.scs.stanford.edu/~deian">Deian Stefan</a> (Stanford)</li>
+          <li><a href="http://www.ezyang.com">Edward Z. Yang</a> (Stanford)</li>
+          <li>Petr Marchenko (Google)</li>
+          <li><a href="http://www.cse.chalmers.se/~russo/">Alejandro Russo</a> (Chalmers)</li>
+          <li><a href="http://www.ccs.neu.edu/home/dherman/">Dave Herman</a> (Mozilla Research)</li>
+          <li><a href="http://www0.cs.ucl.ac.uk/staff/B.Karp/">Brad Karp</a> (UCL)</li>
+          <li><a href="http://www.scs.stanford.edu/~dm">David Mazières</a> (Stanford)</li>
+          <li><a href="http://www.cs.stanford.edu/~jcm">John C. Mitchell</a> (Stanford)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+    </div>
+
+  </div>
+
+
+  </body>
+</html>
