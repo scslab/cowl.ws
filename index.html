@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
   <meta name="author" content="">
-  
+
   <title> COWL: A confinement system for the Web </title>
 
   <!-- Bootstrap core CSS -->
@@ -40,9 +40,24 @@
 
           <div class="jumbotron">
             <p>
-              Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus,
-              tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
-              justo sit amet risus.
+              Many of today's web pages are constructed by assembling building
+              blocks from different companies or independent web developers. The
+              diversity and complexity of web pages might cause third-party
+              components to accidentally leak users' private data. Even worse,
+              third-party content can be malicious, hidden behind seemingly
+              legitimate web sites. By merely visiting a web page, users can
+              set in motion pernicious behaviors, which might lead to expose
+              their private data to unauthorized parties.
+
+              The system 'Confinement with Origin Web Labels', or simply COWL,
+              protects Internet users’ privacy while flexibly allowing web
+              applications to combine content from different web sites. COWL
+              provides a property known as ‘confinement’, which has been known
+              since the 1970s, but proven difficult to achieve in widely
+              deployed systems like web browsers. What makes COWL unique is its
+              minimalist design and low run-time overhead. These are key features
+              making the system attractive to web developers.
+
             </p>
           </div>
           <div class="col-lg-12">
@@ -57,7 +72,7 @@
             Today, <i>contexts</i> -- in the form of tabs, pages, or iframes -- are
             used to isolate content from different origins (web sites).
             COWL extends these context with <i>labels</i>, which encode the origins
-            from where the context has read information. 
+            from where the context has read information.
             In turn, COWL uses these labels to restrict how the code within the
             context communicates, i.e., it confines the code to disallow
             any communication that would result in leaking an origin's sensitive data.
@@ -181,7 +196,7 @@
 
             An <var>LWorker</var> is a light-weight labeled worker, COWL's
             approach to creating cheap labeled contexts. (They are similar to
-            <a href="http://www.w3.org/TR/workers/">Web Workers</a>, 
+            <a href="http://www.w3.org/TR/workers/">Web Workers</a>,
             but labeled and run in the same thread as the parent.)
             This code is simply creates a new context and starts running the untrusted
             checker code in this context.
@@ -194,7 +209,7 @@
    // In example.com page, register message handler waiting for result
    checker.onmessage = function(result) {
      console.log('Password is: ' + result.toString());
-   }; 
+   };
 </pre>
             Since all communication between labeled contexts is done by
             message-passing, we registers a handler which is invoked once the
@@ -212,7 +227,7 @@
 </pre>
 
             Finally, let's send the checker the password so it can do its job.
-            Since the password is senstive, though, we label it with the 
+            Since the password is senstive, though, we label it with the
             origin it's sensitive to: example.com. Now when when the checker
             reads the password, it will be confined!
             </div>
@@ -244,7 +259,7 @@
             the code extracts the password from the labeled blob -- at which point COWL
             taints the context -- and computes the strength with the
             <var>checkStrength</var> function.
-            Once the code inspected the password COWL confined it, preventing it from 
+            Once the code inspected the password COWL confined it, preventing it from
             communicating arbitrarily.
             The code can, of course, send the containing example.com page the
             strength of the password.
@@ -252,10 +267,10 @@
             <div>
             <h4> Take-away: privacy AND functionality</h4>
             Though a simple example, this illustrates an important feature not achievable today:
-            the password strength checker has the <i>flexibility</i> to communicate as necessary, 
-            only once it actually inspects the password should it be confined from communicating 
+            the password strength checker has the <i>flexibility</i> to communicate as necessary,
+            only once it actually inspects the password should it be confined from communicating
             arbitrarily as to ensure <i>privacy</i>. Today we either get functionality by allowing
-            the checker to communicate arbitrarily, even after reading sensitive data, or privacy by 
+            the checker to communicate arbitrarily, even after reading sensitive data, or privacy by
             disallowing it from communicating at all (or not using the library in the first place).
             </div>
 
