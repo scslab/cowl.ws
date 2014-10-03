@@ -29,6 +29,7 @@
     <div class="header">
       <ul class="nav nav-pills pull-right" id="tabs">
         <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+        <li><a href="#design" data-toggle="tab">Design</a></li>
         <li><a href="#example" data-toggle="tab">Example</a></li>
       </ul>
       <h3 class="text-muted">COWL: A confinement system for the Web</h3>
@@ -36,8 +37,6 @@
 
     <div class="tab-content">
     <div class="tab-pane active" id="home">
-        <div class="row marketing">
-
           <div class="jumbotron">
             <h3>About</h3>
             <p>
@@ -66,6 +65,61 @@
             these rights, once the code has read read sensitive data.
             </p>
           </div>
+          <div class="col-lg-12">
+    <!--       <a name="paper"></a> -->
+            <h3>Learn more</a></h3>
+            <p>
+            <a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.pdf">
+              <img src="images/pdf.png"/>
+              <strong>Protecting Users by Confining JavaScript with COWL.</strong>
+            </a>
+            Stefan, D., Yang, E., Marchenko, P., Russo, A., Herman, D., Karp, B., and Mazières, D
+            In the Proceedings of the
+            <a href="https://www.usenix.org/conference/osdi14">
+              11th USENIX Symposium on Operating Systems Design and Implementation (OSDI 2014) </a>,
+            Broomfield, CO, October, 2014.
+            [<a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.bib">bibTex</a>]
+            </p>
+
+            <p>
+            <a href="http://www.scs.stanford.edu/~deian/pubs/yang:2013:towards.pdf">
+              <img src="images/pdf.png"/>
+              <strong>Toward Principled Browser Security</strong>
+            </a>
+            Yang, E., Stefan, D., Mitchell, J., Mazières, D., Marchenko, P., and Karp, B.
+            In the Proceedings of the
+            <a href="https://www.usenix.org/conference/hotos13">
+              14th USENIX Workshop on Hot Topics in Operating Systems (HotOS XIV)</a>,
+            Santa Ana, NM, May, 2013.
+            [<a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.bib">bibTex</a>]
+            </p>
+          </div>
+
+          <div class="col-lg-12 tab-pane">
+    <!--         <a name="software"></a> -->
+            <h3>Software</a></h3>
+            COWL was implemented for Firefox and Chromium as a new DOM-level API.
+            An initial software release (in the form of code and binaries) will be
+            available soon!
+          </div>
+
+          <div class="col-lg-12">
+    <!--         <a name="about"></a> -->
+            <h3>About us</a></h3>
+            <p>COWL is a research project with peers from different organizations. We are: </p>
+            <ul>
+              <li><a href="http://www.scs.stanford.edu/~deian">Deian Stefan</a> (Stanford)</li>
+              <li><a href="http://www.ezyang.com">Edward Z. Yang</a> (Stanford)</li>
+              <li>Petr Marchenko (Google)</li>
+              <li><a href="http://www.cse.chalmers.se/~russo/">Alejandro Russo</a> (Chalmers)</li>
+              <li><a href="http://www.ccs.neu.edu/home/dherman/">Dave Herman</a> (Mozilla Research)</li>
+              <li><a href="http://www0.cs.ucl.ac.uk/staff/B.Karp/">Brad Karp</a> (UCL)</li>
+              <li><a href="http://www.scs.stanford.edu/~dm">David Mazières</a> (Stanford)</li>
+              <li><a href="http://www.cs.stanford.edu/~jcm">John C. Mitchell</a> (Stanford)</li>
+            </ul>
+          </div>
+    </div>
+    <div class="tab-pane" id="design">
           <div class="col-lg-12">
             <h3>Design</h3>
             The COWL design naturally extends the existing web security model with three
@@ -130,60 +184,6 @@ sever other common application patterns.
             </p>
           </div>
 
-          <div class="col-lg-12">
-    <!--       <a name="paper"></a> -->
-            <h3>Learn more</a></h3>
-            <p>
-            <a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.pdf">
-              <img src="images/pdf.png"/>
-              <strong>Protecting Users by Confining JavaScript with COWL.</strong>
-            </a>
-            Stefan, D., Yang, E., Marchenko, P., Russo, A., Herman, D., Karp, B., and Mazières, D
-            In the Proceedings of the
-            <a href="https://www.usenix.org/conference/osdi14">
-              11th USENIX Symposium on Operating Systems Design and Implementation (OSDI 2014) </a>,
-            Broomfield, CO, October, 2014.
-            [<a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.bib">bibTex</a>]
-            </p>
-
-            <p>
-            <a href="http://www.scs.stanford.edu/~deian/pubs/yang:2013:towards.pdf">
-              <img src="images/pdf.png"/>
-              <strong>Toward Principled Browser Security</strong>
-            </a>
-            Yang, E., Stefan, D., Mitchell, J., Mazières, D., Marchenko, P., and Karp, B.
-            In the Proceedings of the
-            <a href="https://www.usenix.org/conference/hotos13">
-              14th USENIX Workshop on Hot Topics in Operating Systems (HotOS XIV)</a>,
-            Santa Ana, NM, May, 2013.
-            [<a href="http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.bib">bibTex</a>]
-            </p>
-          </div>
-
-          <div class="col-lg-12 tab-pane">
-    <!--         <a name="software"></a> -->
-            <h3>Software</a></h3>
-            COWL was implemented for Firefox and Chromium as a new DOM-level API.
-            An initial software release (in the form of code and binaries) will be
-            available soon!
-          </div>
-
-          <div class="col-lg-12">
-    <!--         <a name="about"></a> -->
-            <h3>About us</a></h3>
-            <p>COWL is a research project with peers from different organizations. We are: </p>
-            <ul>
-              <li><a href="http://www.scs.stanford.edu/~deian">Deian Stefan</a> (Stanford)</li>
-              <li><a href="http://www.ezyang.com">Edward Z. Yang</a> (Stanford)</li>
-              <li>Petr Marchenko (Google)</li>
-              <li><a href="http://www.cse.chalmers.se/~russo/">Alejandro Russo</a> (Chalmers)</li>
-              <li><a href="http://www.ccs.neu.edu/home/dherman/">Dave Herman</a> (Mozilla Research)</li>
-              <li><a href="http://www0.cs.ucl.ac.uk/staff/B.Karp/">Brad Karp</a> (UCL)</li>
-              <li><a href="http://www.scs.stanford.edu/~dm">David Mazières</a> (Stanford)</li>
-              <li><a href="http://www.cs.stanford.edu/~jcm">John C. Mitchell</a> (Stanford)</li>
-            </ul>
-          </div>
-        </div>
     </div>
 
     <div class="tab-pane" id="example">
