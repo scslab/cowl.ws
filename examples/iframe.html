@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>COWL cross iframe communication</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,700,300italic' rel='stylesheet' type='text/css'>
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="../css/jumbotron-narrow.css" rel="stylesheet">
+
+
+
+  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?skin=desert"></script>
+  </head>
+
+  <body>
+
+  <div class="container">
+
+    <div class="col-lg-12">
+      <h3>Iframe communication</h3>
+<pre class="prettyprint lang-js">
+</pre>
+    </div>
+    <div class="col-lg-12">
+      <div class="panel panel-info">
+        <div class="panel-heading">iframe 1</div>
+        <div class="panel-body">
+        <iframe frameborder="0" class="col-lg-6" src="iframe_inner.html" id="ifr1"></iframe>
+        </div>
+      </div>
+      <div class="panel panel-info">
+        <div class="panel-heading">iframe 2</div>
+        <div class="panel-body">
+        <iframe frameborder="0" class="col-lg-6"
+          src="http://b.lvh.me:3000/examples/iframe_inner.html" id="ifr2"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12" id="messages">
+      <h4>Messages from children:</h4>
+    </div>
+    <script>
+      COWL.enable();
+
+      window.addEventListener("message", function(event) {
+        var d = document.createElement("div");
+        d.appendChild(document.createTextNode(event.data));
+        document.getElementById("messages").appendChild(d);
+      });
+
+
+      var ifr1 = document.getElementById('ifr1').contentWindow;
+      var ifr2 = document.getElementById('ifr2').contentWindow;
+
+      setTimeout(function() {
+        ifr1.postMessage('ping 1 iframe 1', '*');
+        ifr2.postMessage('ping 1 iframe 2', '*');
+      }, 3000);
+
+      setTimeout(function() {
+        ifr1.postMessage('ping 2 iframe 1', '*');
+        ifr2.postMessage('ping 2 iframe 2', '*');
+        ifr2.postMessage('ping 2 iframe 2', '*');
+      }, 5000);
+
+      setTimeout(function() {
+        ifr2.postMessage('ping 3 iframe 2', '*');
+      }, 7000);
+      setTimeout(function() {
+        ifr2.postMessage('ping 4 iframe 2', '*');
+      }, 9000);
+      setTimeout(function() {
+        var blob = new LabeledBlob(new Blob(['ping 5 iframe 2']), 
+                                   new Label('http://a.com'));
+        ifr2.postMessage(blob, '*');
+      }, 11000);
+    </script>
+
+  </div>
+  </body>
+
+</html>
