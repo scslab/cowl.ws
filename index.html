@@ -4,8 +4,6 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
 
   <title> COWL: A Confinement System for the Web </title>
 
@@ -103,10 +101,42 @@
           <div class="col-lg-12 tab-pane">
     <!--         <a name="software"></a> -->
             <h3>Software</a></h3>
+            <p>
             We have implemented COWL as a new DOM-level API for the
-            Firefox and Chromium browsers.
-            An initial software release (open-source and binaries) will be
-            available soon at this site!
+            Firefox and Chromium browsers.  The preliminary version of
+            our Firefox COWL implementation is available for download.
+            <p>
+            <h4>Binaries</h4>
+            <ul class="list-unstyled">
+              <li>
+
+              <a href="dowloads/linux/firefox-36.0a1.en-US.linux-x86_64.tar.bz2">
+                <img src="images/linux.png" height="25">
+                Linux
+              </a>
+ [<a href="https://support.mozilla.org/en-US/kb/install-firefox-linux">install instructions</a>] 
+              </li>
+              <li>
+              <a href="">
+                <img src="images/osx.png"   height="25">
+                OS X
+              </a>
+   [<a href="https://support.mozilla.org/en-US/kb/how-download-and-install-firefox-mac">install instructions</a>]
+              </li>
+            </ul>
+            </p>
+
+            <p>
+            <h4>Source</h4>
+            You can access the source on <a href="https://github.com/scslab/cowl">GitHub</a>, or by simply running:
+
+            <p>
+<pre class="prettyprint lang-bash">
+$  git clone https://github.com/scslab/cowl.git
+</pre>
+            </p>
+            </p>
+
           </div>
 
           <div class="col-lg-12">
@@ -281,7 +311,10 @@ our paper details three other common application design patterns.
   // In checker.js, register handler waiting for request from parent:
   onmessage = function(labeledPass) {
     if (doneLoading) {
-      var password = labeledPass.blob; // Extract password => taints context!
+      // Taint contex to preserve privacy or password
+      COWL.privacyLabel = COWL.privacyLabel.and(labeledPass.privacy);
+      // Now we can read the password
+      var password = labeledPass.blob;
       // Cannot communicate with sketchy.ru anymore, but can reply to parent:
       postMessage(checkStrength(password));
     }
