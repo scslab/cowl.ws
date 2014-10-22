@@ -71,6 +71,7 @@ function __workerCode() { /*
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="http://cowl.ws/cowl.js"></script>
 <script>
 COWL.enable();
 COWL.privacyLabel = %privacyLabel;
