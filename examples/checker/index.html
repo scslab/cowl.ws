@@ -35,7 +35,7 @@
         var password = $('#password').val();
         $('#submit').button('loading');
         // Create context to execute checker in:
-        var lchecker = new LWorker("http://sketchy.lvh.me:3000/examples/checker/checker.js")
+        var lchecker = new LWorker("http://sketchy.cowl.ru/examples/checker/checker.js")
 
         lchecker.onmessage = function (data) {
           if (data === 'ready') {
