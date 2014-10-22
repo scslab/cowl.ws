@@ -36,7 +36,7 @@ function fetchRegex(cb) {
     req.send();
   } catch(e) {
     console.log("Failed to fetch regex: %s", e);
-    cb(/\w{6,20}/);
+    cb(/\w{6,}/);
   }
 }
 

@@ -19,7 +19,7 @@
       <form id="check">
         <div class="form-group has-feedback" id="check">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password">
+          <input type="text" class="form-control" id="password">
           <span id="response">
           </span>
         </div>
@@ -27,6 +27,19 @@
                 data-loading-text="checking...">check</button>
       </form>
       </p>
+    </div>
+    <div class="col-lg-4">
+      <blockquote>
+      <p class="small">
+      This checker loads a regular expression from <a
+        href="regex.json">here</a> to test if the password is strong
+      (or weak).  The current regular
+      expression (see <a
+        href="http://www.mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/">here</a>)
+      tests if the password has more than 6 characters, a special
+      character, a digit, and is mixed-case.
+      </p>
+      </blockquote>
     </div>
 
     <script>
