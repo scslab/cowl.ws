@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Example: Password strength-checker</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <script src="/js/jquery-1.11.0.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="http://cowl.ws/cowl.js"></script>
+  </head>
+
+  <body>
+
+  <div class="container">
+    <div class="col-lg-4">
+      <p>
+      <form id="check">
+        <div class="form-group has-feedback" id="check">
+          <label for="password">Password</label>
+          <input type="text" class="form-control" id="password" autocomplete="off">
+          <span id="response">
+          </span>
+        </div>
+        <button id="submit" type="submit" class="btn btn-default"
+                data-loading-text="checking...">check</button>
+      </form>
+      </p>
+    </div>
+    <div class="col-lg-4">
+      <blockquote>
+      <p class="small">
+      This checker loads a regular expression to test if the password
+      is strong (or weak).  The current regular expression tests if
+      the password has more than 6 characters, a special character, a
+      digit, and is mixed-case.
+      </p>
+      </blockquote>
+    </div>
+
+    <script>
+      if (!window.COWL) { // No COWL installed
+        disableForm();     // disable form
+        $('#password').val('Sorry, you need a COWL-enabled browser :(');
+        $('#response').html('<span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>')
+      }
+
+      $('#check').submit(function (event) {
+        disableForm(); // Disable form
+
+        // Get the current value typed into the password field:
+        var password = $('#password').val();
+        // Label the password, it's sensitive to the current origin:
+        password = new LabeledBlob(password, window.location.origin);
+
+        // Create new context to execute checker code in:
+        var lchecker = new LWorker("http://sketchy.cowl.ws/examples/checker/checker.js")
+
+        // Register handler to receive messages from worker:
+        lchecker.onmessage = function (data) {
+          if (data === 'ready') { // Checker is ready
+            // Send the labeled password to the checker:
+            lchecker.postMessage(password)
+          } else { // Checker send us the password strength
+            enableForm(); // Enable the form again
+            // Update our response element with icon denoting the strength:
+            if (data === 'strong') {
+              showStrongIcon();
+            } else {
+              showWeakIcon();
+            }
+          }
+        };
+
+        // Don't submit form as usual:
+        event.preventDefault();
+      });
+
+
+
+      function disableForm() {
+        toggleForm();
+        $('#submit').button('loading');
+      }
+      function enableForm() {
+        toggleForm();
+        $('#submit').button('reset');
+      }
+
+      function toggleForm() {
+        var pElem = document.getElementById('password');
+        pElem.disabled = !pElem.disabled;
+        var sElem = document.getElementById('submit');
+        sElem.disabled = !sElem.disabled;
+      }
+
+      function showWeakIcon() {
+        $('#check').removeClass('has-success');
+        $('#check').addClass('has-error');
+        $('#response').html('<span class="glyphicon glyphicon-thumbs-down form-control-feedback"></span>')
+      }
+
+      function showStrongIcon() {
+        $('#check').removeClass('has-error');
+        $('#check').addClass('has-success');
+        $('#response').html('<span class="glyphicon glyphicon-thumbs-up form-control-feedback"></span>')
+      }
+    </script>
+  </div>
+  </body>
+</html>
