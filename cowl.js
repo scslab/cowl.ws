@@ -82,6 +82,12 @@ postMessage = function(obj) {
   parent.postMessage({id:%id, message:obj},'*');
 };
 
+function importScript(url) {
+  var source = document.createElement('script');
+  source.src = url;
+  document.body.appendChild(source);
+}
+
 (function() {
   var _onmessage;
   window.addEventListener('message', function(event) {
