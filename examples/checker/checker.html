@@ -41,7 +41,8 @@
 
     <script>
       if (!window.COWL) { // No COWL installed
-        disableForm();     // disable form
+        toggleForm();     // disable form
+        $('#submit').attr('disabled','disabled');
         $('#password').val('Sorry, you need a COWL-enabled browser :(');
         $('#response').html('<span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>')
       }
