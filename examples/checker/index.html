@@ -55,7 +55,7 @@
       itself.
       </p>
       <p>
-      To follow along you may want to browser the code <a
+      To follow along you may want to browse the code <a
         href="https://github.com/scslab/cowl.ws/tree/master/examples/checker" target="blank">on GitHub</a>.
       </p>
     </div>
@@ -63,8 +63,8 @@
       <h4>Main page [<a href="https://github.com/scslab/cowl.ws/tree/master/examples/checker/checker.html" target="blank">checker.html</a>]</h4>
       <p>
       The implementation of the main page is pretty straight forward.
-      We are going to use <a href="">Bootstrap</a> to make some the
-      form pretty; we're going to use <a href="">jQuery</a> to
+      We are going to use <a href="http://getbootstrap.com/">Bootstrap</a> to make the
+      form pretty; we're going to use <a href="https://jquery.com/">jQuery</a> to
       simplify the form submission. Below is the markup for the
       password form:
       </p>
@@ -85,11 +85,11 @@
     before. Similarly, you can ignore the <var>loading-text</var> data
     attribute -- we're going to use this to override the button's
     text from <var>check</var> to <var>checking...</var> while the
-    worker is checker is being loaded and still computing. There are
-    only foru things that are important:
+    checker's worker is being loaded and still computing. There are
+    only four things that are important:
     <ul>
       <li>The form's id is <var>check</var>; we're going to use this to
-        register a <var>onsubmmit</var> handler that takes our password
+        register a <var>onsubmit</var> handler that takes our password
         and sends to to the checker.  </li>
       <li>The password's id is <var>password</var>; we're going to use
       this to get the element's value.</li>
@@ -99,7 +99,7 @@
       <li>The form has a <var>&lt;span&gt;</var> element with id
         <var>response</var>; we're going to insert the checker
         response here in the form of a thumbs up or thumbs down icon,
-      respectively denoting that the password strong and weak.</li>
+      respectively denoting that the password is strong or weak.</li>
     </ul>
     </p>
     <p>
